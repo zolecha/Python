@@ -51,12 +51,11 @@ class Logowanie:
         cursor = self.conn.cursor()
         id_klienta = cursor.execute("select id_klienta from czytelnik where email='"+email+"' and password='"+haslo+"';")
         results = cursor.fetchall()
-        for row in results:
-            id_klienta = row[0]
-            if id_klienta > 0:
+        if(len(results) > 0):
+                id_klienta = results[0][0]
                 czytelnik = Czytelnik(id_klienta)
-            else:   
-                print('Login lub hasło błędne\nWybierz ponownie jako kto chcesz się zalogować(C,B) lub wyjdź(Q)')
+        else:   
+            print('Login lub hasło błędne\nWybierz ponownie jako kto chcesz się zalogować(C,B) lub wyjdź(Q)')
                         
                        
     def bibliotekarz(self):
@@ -65,12 +64,11 @@ class Logowanie:
         cursor = self.conn.cursor()
         id_b = cursor.execute('select id_b from bibliotekarz where login=\''+login+'\' and password=\''+haslo+'\';')
         results = cursor.fetchall()
-        for row in results:
-            self.id_b = row[0]
-            if id_b > 0:
-                bibliotekarz = Bibliotekarz(id_b)
-            else:   
-                print('Login lub hasło błędne\nWybierz ponownie jako kto chcesz się zalogować(C,B) lub wyjdź(Q)')
+        if(len(results) > 0):
+            self.id_b = row[0][0]
+            bibliotekarz = Bibliotekarz(id_b)
+        else:   
+            print('Login lub hasło błędne\nWybierz ponownie jako kto chcesz się zalogować(C,B) lub wyjdź(Q)')
             
         
 '''////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////'''  
@@ -183,7 +181,7 @@ class Czytelnik(Logowanie):
         
 '''////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////'''     
         
-class Bibliotekarz:
+class Bibliotekarz(Logowanie):
     def __init__(self, id_b):
         self.instruction()
         self.id_b = id_b;
@@ -339,7 +337,10 @@ class Bibliotekarz:
         results = cursor.fetchall()
         for row in results:
             data_odbioru = row[0]
-        print("Data odbioru tej książki to: ", data_odbioru)
+            try:
+                print("Data odbioru tej książki to: ", data_odbioru)
+            except:
+                print("Sprawdz czy napewno jest takie zamówienie.")
         while True:
             pytanie = input("Czy chcesz dodać kolejne daty zamówienia (T)ak, (N)ie: ")
             if pytanie.upper() == "T":
@@ -350,7 +351,10 @@ class Bibliotekarz:
                 results = cursor.fetchall()
                 for row in results:
                     data_odbioru = row[0]
-                print("Data odbioru tej książki to: ", data_odbioru)              
+                    try:
+                        print("Data odbioru tej książki to: ", data_odbioru)   
+                    except:
+                        print("Sprawdz czy napewno jest takie zamówienie.")
             elif pytanie.upper() == "N":
                 break;
             else:
